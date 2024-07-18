@@ -54,8 +54,10 @@ def message_create(request):
             user_profile, created = Profile.objects.get_or_create(user=request.user)
             user_profile.nickname = nickname
             user_profile.save()
+
             message = form.save(commit=False)
             message.nick = user_profile
+            
             message.save()
             return redirect('main:main')
         

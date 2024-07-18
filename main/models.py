@@ -12,10 +12,10 @@ class openTime(models.Model):
 
 # 메세지 작성 모델
 class Message(models.Model):
+    nick = models.ForeignKey(Profile, on_delete=models.CASCADE)
     morning_mes = models.CharField(max_length=200)
     night_mes = models.CharField(max_length=200)
     created_at = models.DateTimeField('date published', default = timezone.now)
-    nick = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.morning_mes}, {self.night_mes}"
