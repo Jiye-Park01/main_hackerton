@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>환영합니다!</h1>
+    {% if user_has_written_message %}
+    <p>✔ 메시지를 작성하셨습니다.</p>
+    {% else %}
+    <p>✖ 메시지를 작성하지 않았습니다.</p>
+    {% endif %}
+    <p>모닝메세지: {{ morning_time }}</p>
+    <p>나잇메세지: {{ night_time }}</p>
+    <a href="{% url 'main:modify_open_time' %}">열람시간 수정하기</a>
+    <a href="{% url 'accounts:login' %}">로그아웃</a>
+    <hr>
+    <a href="{% url 'main:message_create' %}">새 메세지 작성하기</a>
+    <hr>
+    <a href="{% url 'main:message_list' %}">메세지 열람하기</a>
+</body>
+</html>
+

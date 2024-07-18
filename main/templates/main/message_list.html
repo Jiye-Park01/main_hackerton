@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        {% for message in messages %}
+            <li>
+                <strong>Morning:</strong> {{ message.morning_mes }}<br>
+                <strong>Night:</strong> {{ message.night_mes }}<br>
+                <strong>작성 시간:</strong> {{ message.created_at }}<br>
+                <strong class="nickname">{{ message.nick.nickname }}</strong>
+                <a href="{% url 'main:update' message.id %}">수정하기</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <hr>
+    <a href="{% url 'main:main' %}">돌아가기</a>
+</body>
+</html>
