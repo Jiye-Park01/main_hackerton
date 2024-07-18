@@ -31,14 +31,22 @@ def modify_time(request):
     return render(request, 'main/modify_time.html', {'form': form})
 
 # 메인화면을 렌더링 + 열람시간 띄우기
-def list(request):
+def main(request):
     open_time = openTime.objects.first()
-
     context = {
-        'morning_time' : open_time.morning_time if open_time else None,
-        'night_time' : open_time.night_time if open_time else None
+        'morning_time': open_time.morning_time if open_time else None,
+        'night_time': open_time.night_time if open_time else None,
     }
-    
+    return render(request, 'main/main.html', context)
+
+# 메시지 열람하기
+def message_list(request):
+    today = timezone.now().date()
+    messages = Message.objects.filter(created_at__date=today)
+    return render(request, 'main/message_list.html', {'messages': messages})
+
+# 메세지 작성하기
+def message_create(request):
     if request.method == "POST":
         form = MessageForm(request.POST)
         if form.is_valid():
@@ -54,15 +62,7 @@ def list(request):
     else:
         form = MessageForm()
 
-    today = timezone.now().date()
-    messages = Message.objects.filter(created_at__date=today)
-
-    context.update({
-        'form': form,
-        'messages': messages,
-    })
-
-    return render(request, 'main/main.html', context)
+    return render(request, 'main/message_create.html', {'form': form})
 
 # 메세지 수정하기
 def update(request, id):

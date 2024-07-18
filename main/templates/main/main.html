@@ -12,20 +12,8 @@
     <a href="{% url 'main:modify_open_time' %}">열람시간 수정하기</a> <!-- 'modify_open_time'으로 수정 -->
     <a href="{% url 'accounts:login' %}">로그아웃</a>
     <hr>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
-    <ul>
-        {% for message in messages %}
-            <li>
-                <strong>메세지:</strong> {{ message.content }}<br>
-                <strong>작성 시간:</strong> {{ message.created_at }}<br>
-                <strong class="nickname">{{ message.nick.nickname }}</strong>
-                <a href="{% url 'main:update' message.id %}">Edit</a>
-            </li>
-        {% endfor %}
-    </ul>
+    <a href="{% url 'main:message_create' %}">새 메세지 작성하기</a>
+    <hr>
+    <a href="{% url 'main:message_list' %}">메세지 열람하기</a>
 </body>
 </html>
