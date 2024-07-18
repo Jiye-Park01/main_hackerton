@@ -9,7 +9,8 @@
     <ul>
         {% for message in messages %}
             <li>
-                <strong>메세지:</strong> {{ message.content }}<br>
+                <strong>Morning:</strong> {{ message.morning_mes }}<br>
+                <strong>Night:</strong> {{ message.night_mes }}<br>
                 <strong>작성 시간:</strong> {{ message.created_at }}<br>
                 <strong class="nickname">{{ message.nick.nickname }}</strong>
                 <a href="{% url 'main:update' message.id %}">수정하기</a>
