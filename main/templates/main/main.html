@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>환영합니다!</h1>
+    <p>모닝메세지: {{ morning_time }}</p> <!-- context를 통해 접근 -->
+    <p>나잇메세지: {{ night_time }}</p> <!-- context를 통해 접근 -->
+    <a href="{% url 'main:modify_open_time' %}">열람시간 수정하기</a> <!-- 'modify_open_time'으로 수정 -->
+    <a href="{% url 'accounts:login' %}">로그아웃</a>
+    <hr>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <ul>
+        {% for message in messages %}
+            <li>
+                <strong>메세지:</strong> {{ message.content }}<br>
+                <strong>작성 시간:</strong> {{ message.created_at }}<br>
+                <strong class="nickname">{{ message.nick.nickname }}</strong>
+                <a href="{% url 'main:update' message.id %}">Edit</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
