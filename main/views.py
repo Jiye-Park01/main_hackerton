@@ -41,8 +41,8 @@ def main(request):
     now = timezone.localtime(timezone.now())
     current_time = now.time()
     context = {
-        'morning_time': open_time.morning_time if open_time else None,
-        'night_time': open_time.night_time if open_time else None,
+        'morning_time': open_time.morning_time if open_time else datetime.strptime('08:00:00', '%H:%M:%S').time(),
+        'night_time': open_time.night_time if open_time else datetime.strptime('23:00:00', '%H:%M:%S').time(),
         'current_time' : now.strftime('%m월 %d일'), # 현재시간 표기
         'can_open_message' : False, # 메세지 열람가능 여부
         'open_time_set': open_time is not None  # 열람시간 설정 여부 추가
@@ -79,8 +79,9 @@ def main(request):
         # 모닝 후, 나잇 전 (오전 12시(정오)부터 저녁 9시(21시))
         else:
             context['time_message'] = f"잠들기전, 우리가 약속한 {night_time.strftime('%I:%M %p')}에 만나요."
-    else:
-        context['time_message'] = "열람 시간부터 설정해보세요!."
+    
+    else: # 이미 디폴트로 설정된 열람시간이 있기때문에
+        context['time_message'] = "오늘의 메시지를 등록하고 따뜻한 한 마디를 주고 받아보세요."
 
     # 선택적 열람을 위해
     if open_time:
