@@ -20,11 +20,21 @@
     <hr>
     <a href="{% url 'main:message_create' %}">새 메세지 작성하기</a>
     <hr>
-    {% if can_open_messages %}
-    <a href="{% url 'main:message_list' %}">메세지 열람하기</a>
+    {% if open_time_set %}
+        {% if user_has_written_message %}
+            {% if can_open_messages %}
+                <a href="{% url 'main:message_list' %}">메시지 열람하기</a>
+            {% else %}
+                <p>지정된 시간에 열람하실 수 있습니다.</p>
+            {% endif %}
+        {% else %}
+            <p>메시지를 등록 후 열람하실 수 있습니다.</p>
+        {% endif %}
     {% else %}
-    <p>지정된 시간에 열람하실 수 있습니다.</p>
+        <p>열람 시간을 먼저 설정해주세요.</p>
     {% endif %}
 </body>
 </html>
+
+
 

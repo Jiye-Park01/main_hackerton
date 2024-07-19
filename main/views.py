@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils.dateformat import DateFormat
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import status
@@ -44,7 +44,8 @@ def main(request):
         'morning_time': open_time.morning_time if open_time else None,
         'night_time': open_time.night_time if open_time else None,
         'current_time' : now.strftime('%m월 %d일'), # 현재시간 표기
-        'can_open_message' : False # 메세지 열람가능 여부
+        'can_open_message' : False, # 메세지 열람가능 여부
+        'open_time_set': open_time is not None  # 열람시간 설정 여부 추가
     }
 
     today = timezone.now().date()
@@ -58,26 +59,28 @@ def main(request):
 
         # 아침 시간대(5시~12시)
         if datetime.strptime('05:00:00', '%H:%M:%S').time() <= current_time <= datetime.strptime('12:00:00', '%H:%M:%S').time():
+            # 모닝
             if morning_time <= current_time <= (datetime.combine(now.date(), morning_time) + timedelta(hours=1)).time():
                 if user_has_written_message:
                     context['time_message'] = "아래의 카드를 확인하고 활기찬 아침을 시작해봐요."
                 else:
                     context['time_message'] = "오늘의 메시지를 등록하고 따뜻한 한 마디를 주고 받아보세요."
+            # 모닝전
             else:
                 context['time_message'] = f"따뜻한 아침을 준비중이에요. 우리가 약속한 {morning_time.strftime('%I:%M %p')}에 만나요."
         # 밤 시간대(21시~24시 및 0시~4시)
-        elif (datetime.strptime('21:00:00', '%H:%M:%S').time() <= current_time <= datetime.strptime('23:59:59', '%H:%M:%S').time()) or (datetime.strptime('00:00:00', '%H:%M:%S').time() <= current_time <= datetime.strptime('04:00:00', '%H:%M:%S').time()):
+        elif (datetime.strptime('21:00:00', '%H:%M:%S').time() <= current_time or current_time <= datetime.strptime('04:00:00', '%H:%M:%S').time()):
+            # 나잇
             if night_time <= current_time <= (datetime.combine(now.date(), night_time) + timedelta(hours=1)).time():
                 if user_has_written_message:
                     context['time_message'] = "아래의 카드 하나를 선택해 따뜻한 한마디로 좋은 밤을 시작해봐요."
                 else:
                     context['time_message'] = "오늘의 메시지를 등록하고 따뜻한 한 마디를 주고 받아보세요."
-            else:
-                context['time_message'] = f"잠들기전, 우리가 약속한 {night_time.strftime('%I:%M %p')}에 만나요."
+        # 모닝 후, 나잇 전 (오전 12시(정오)부터 저녁 9시(21시))
         else:
-            context['time_message'] = "지금은 지정된 열람 시간이 아닙니다."
+            context['time_message'] = f"잠들기전, 우리가 약속한 {night_time.strftime('%I:%M %p')}에 만나요."
     else:
-        context['time_message'] = "열람 시간이 설정되지 않았습니다."
+        context['time_message'] = "열람 시간부터 설정해보세요!."
 
     # 선택적 열람을 위해
     if open_time:
