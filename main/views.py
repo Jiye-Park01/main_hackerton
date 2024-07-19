@@ -34,16 +34,18 @@ def modify_time(request):
         form = OpenTimeForm(instance=open_time)
     return render(request, 'main/modify_time.html', {'form': form})
 
-# 메인화면을 렌더링 + 열람시간 띄우기 + 낮인지 밤인지 열람시간에 따라 메세지 확인 할 수 있는 지에 따라 템플릿에 다르게 표시하기
+# 메인화면을 렌더링 + 현재시간 띄우기 + 열람시간 띄우기 + 낮인지 밤인지 열람시간에 따라 메세지 확인 할 수 있는 지에 따라 템플릿에 다르게 표시하기
 def main(request):
     user = request.user
     open_time = openTime.objects.filter(user=user).first()
     now = timezone.localtime(timezone.now())
     current_time = now.time()
+
     context = {
         'morning_time': open_time.morning_time if open_time else None,
         'night_time': open_time.night_time if open_time else None,
-        'current_time' : now.strftime('%m월 %d일')
+        'current_time' : now.strftime('%m월 %d일'), # 현재시간 표기
+        'can_open_message' : False # 메세지 열람가능 여부
     }
 
     if open_time:
@@ -70,6 +72,18 @@ def main(request):
             context['time_message'] = "지금은 지정된 열람 시간이 아닙니다."
     else:
         context['time_message'] = "열람 시간이 설정되지 않았습니다."
+
+    # 선택적 열람을 위해
+    if open_time:
+        morning_time = open_time.morning_time
+        night_time = open_time.night_time
+
+        # 현재 시간 = 지정한 모닝메세지 열람시간 ~ 1h
+        if morning_time <= current_time <= (datetime.combine(now.date(), morning_time) + timezone.timedelta(hours=1)).time():
+            context['can_open_messages'] = True
+        # 현재시간 = 지정한 나잇메세지 열람시간 ~ + 1h
+        elif night_time <= current_time <= (datetime.combine(now.date(), night_time) + timezone.timedelta(hours=1)).time():
+            context['can_open_messages'] = True
 
 
     today = timezone.now().date()
@@ -108,20 +122,3 @@ def message_create(request):
         form = MessageForm()
 
     return render(request, 'main/message_create.html', {'form': form})
-
-# 메세지 수정하기
-def update(request, id):
-    message = get_object_or_404(Message, id=id)
-
-    if request.method == "POST":
-        form = MessageForm(request.POST, instance=message)
-        if form.is_valid():
-            nickname = form.cleaned_data['nickname']
-            user_profile, created = Profile.objects.get_or_create(user=request.user)
-            user_profile.nickname = nickname
-            user_profile.save()
-            form.save()
-            return redirect('main:main')
-    else:
-        form = MessageForm(instance=message)
-    return render(request, 'main/update.html', {'form': form, 'message': message})

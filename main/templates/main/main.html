@@ -20,7 +20,11 @@
     <hr>
     <a href="{% url 'main:message_create' %}">새 메세지 작성하기</a>
     <hr>
+    {% if can_open_messages %}
     <a href="{% url 'main:message_list' %}">메세지 열람하기</a>
+    {% else %}
+    <p>지금은 메세지 열람 시간이 아닙니다.</p>
+    {% endif %}
 </body>
 </html>
 
