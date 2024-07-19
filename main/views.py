@@ -54,21 +54,21 @@ def main(request):
 
         # 아침 시간대(5시~12시)
         if datetime.strptime('05:00:00', '%H:%M:%S').time() <= current_time <= datetime.strptime('12:00:00', '%H:%M:%S').time():
-            # 열람시간이 된 경우(아침)
+            # 열람시간이 된 경우(모닝)
             if morning_time <= current_time <= (datetime.combine(now.date(), morning_time) + timezone.timedelta(hours=1)).time():
                 context['time_message'] = "아래의 카드를 확인하고 활기찬 아침을 시작해봐요."
             else:
-            # 열람시간이 아닌 경우(아침)
+            # 열람시간이 아닌 경우(모닝전)
                 context['time_message'] = f"따뜻한 아침을 준비중이에요. 우리가 약속한 {morning_time.strftime('%I:%M %p')}에 만나요."
-        # 밤 시간대(9시~새벽1시)
-        elif datetime.strptime('21:00:00', '%H:%M:%S').time() <= current_time or current_time <= datetime.strptime('01:00:00', '%H:%M:%S').time():
-            # 열람시간이 된 경우(밤)
+        # 밤 시간대(21시~24시 및 0시~4시)
+        elif datetime.strptime('21:00:00', '%H:%M:%S').time() <= current_time or current_time <= (datetime.strptime('23:59:59', '%H:%M:%S').time()) or (datetime.strptime('00:00:00', '%H:%M:%S').time() <= current_time <= datetime.strptime('04:00:00', '%H:%M:%S').time()):
+            # 열람시간이 된 경우(나잇)
             if night_time <= current_time <= (datetime.combine(now.date(), night_time) + timezone.timedelta(hours=1)).time():
                 context['time_message'] = "아래의 카드 하나를 선택해 따뜻한 한마디로 좋은 밤을 시작해요."
             else:
-                # 열람시간이 아닌 경우(밤)
+                # 열람시간이 아닌 경우(모닝후, 나잇전)
                 context['time_message'] = f"잠들기전, 우리가 약속한 {night_time.strftime('%I:%M %p')}에 만나요."
-        else:
+        else: # 05:00 ~ 04:00이 아닌 시간
             context['time_message'] = "지금은 지정된 열람 시간이 아닙니다."
     else:
         context['time_message'] = "열람 시간이 설정되지 않았습니다."
