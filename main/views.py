@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.utils.dateformat import DateFormat
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import status
 from rest_framework.response import Response
@@ -32,20 +34,50 @@ def modify_time(request):
         form = OpenTimeForm(instance=open_time)
     return render(request, 'main/modify_time.html', {'form': form})
 
-# 메인화면을 렌더링 + 열람시간 띄우기
+# 메인화면을 렌더링 + 열람시간 띄우기 + 낮인지 밤인지 열람시간에 따라 메세지 확인 할 수 있는 지에 따라 템플릿에 다르게 표시하기
 def main(request):
     user = request.user
     open_time = openTime.objects.filter(user=user).first()
+    now = timezone.localtime(timezone.now())
+    current_time = now.time()
     context = {
         'morning_time': open_time.morning_time if open_time else None,
         'night_time': open_time.night_time if open_time else None,
+        'current_time' : now.strftime('%m월 %d일')
     }
+
+    if open_time:
+        morning_time = open_time.morning_time
+        night_time = open_time.night_time
+
+        # 아침 시간대(5시~12시)
+        if datetime.strptime('05:00:00', '%H:%M:%S').time() <= current_time <= datetime.strptime('12:00:00', '%H:%M:%S').time():
+            # 열람시간이 된 경우(아침)
+            if morning_time <= current_time <= (datetime.combine(now.date(), morning_time) + timezone.timedelta(hours=1)).time():
+                context['time_message'] = "아래의 카드를 확인하고 활기찬 아침을 시작해봐요."
+            else:
+            # 열람시간이 아닌 경우(아침)
+                context['time_message'] = f"따뜻한 아침을 준비중이에요. 우리가 약속한 {morning_time.strftime('%I:%M %p')}에 만나요."
+        # 밤 시간대(9시~새벽1시)
+        elif datetime.strptime('21:00:00', '%H:%M:%S').time() <= current_time or current_time <= datetime.strptime('01:00:00', '%H:%M:%S').time():
+            # 열람시간이 된 경우(밤)
+            if night_time <= current_time <= (datetime.combine(now.date(), night_time) + timezone.timedelta(hours=1)).time():
+                context['time_message'] = "아래의 카드 하나를 선택해 따뜻한 한마디로 좋은 밤을 시작해요."
+            else:
+                # 열람시간이 아닌 경우(밤)
+                context['time_message'] = f"잠들기전, 우리가 약속한 {night_time.strftime('%I:%M %p')}에 만나요."
+        else:
+            context['time_message'] = "지금은 지정된 열람 시간이 아닙니다."
+    else:
+        context['time_message'] = "열람 시간이 설정되지 않았습니다."
+
 
     today = timezone.now().date()
     user_profile, created = Profile.objects.get_or_create(user=user)
+    
     # 메세지 작성 여부 적용 함수
     user_has_written_message = Message.objects.filter(nick=user_profile, created_at__date=today).exists()
-
+    
     context['user_has_written_message'] = user_has_written_message
 
     return render(request, 'main/main.html', context)
@@ -80,6 +112,7 @@ def message_create(request):
 # 메세지 수정하기
 def update(request, id):
     message = get_object_or_404(Message, id=id)
+
     if request.method == "POST":
         form = MessageForm(request.POST, instance=message)
         if form.is_valid():

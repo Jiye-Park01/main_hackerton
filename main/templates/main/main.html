@@ -6,12 +6,13 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>환영합니다!</h1>
+    <h1></h1>
     {% if user_has_written_message %}
-    <p>✔ 메시지를 작성하셨습니다.</p>
+    <p>{{ current_time }} ✔ 메시지 등록</p>
     {% else %}
-    <p>✖ 메시지를 작성하지 않았습니다.</p>
+    <p>{{ current_time }} ✖ 메시지 등록</p>
     {% endif %}
+    <p>{{ time_message }}</p>
     <p>모닝메세지: {{ morning_time }}</p>
     <p>나잇메세지: {{ night_time }}</p>
     <a href="{% url 'main:modify_open_time' %}">열람시간 수정하기</a>
