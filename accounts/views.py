@@ -16,8 +16,13 @@ class SignUpView(View):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('accounts:login')  # 회원가입 완료 후 'accounts:login' URL로 리디렉트
+            return redirect('accounts:welcomepage')  # 회원가입 완료 후 'accounts:welcomepage' URL로 리디렉트
         return render(request, 'accounts/signup.html', {'form': form})
+
+# 회원가입 완료창 추가
+class welcomepage(View):
+    def get(self, request):
+        return render(request, 'accounts/welcomepage.html')
 
 # 2. 로그인
 def login_view(request):
