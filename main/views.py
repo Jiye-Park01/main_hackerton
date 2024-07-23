@@ -65,13 +65,13 @@ def main(request):
 
     # 아침 시간대(5시~12시)
     if datetime.strptime('05:00:00', '%H:%M:%S').time() <= current_time <= datetime.strptime('12:00:00', '%H:%M:%S').time():
-        # 모닝
+        # 모닝(만약 9시로 지정했으면)
         if morning_time <= current_time <= (datetime.combine(now.date(), morning_time) + timedelta(hours=1)).time():
             if user_has_written_message:
                 context['time_message'] = "아래의 카드를 확인하고 활기찬 아침을 시작해봐요."
             else:
                 context['time_message'] = "오늘의 메시지를 등록하고 따뜻한 한 마디를 주고 받아보세요."
-        # 모닝전
+        # 모닝전(5시부터 9시 전까지는 이 문구가 뜨는 것)
         else:
             context['time_message'] = f"따뜻한 아침을 준비중이에요. 우리가 약속한 {morning_time.strftime('%I:%M %p')}에 만나요."
     # 밤 시간대(21시~24시 및 0시~4시)
