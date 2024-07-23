@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ group.name }}</title>
+</head>
+<body>
+    <h1>{{ group.name }}</h1>
+    <p>{{ group.introduce }}</p>
+    <p>생성일: {{ group.created_at }}</p>
+    <p>인원: {{ group.memberships.count }}/{{ group.max_members }}</p>
+    <form action="{% url 'join_group' group.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" {% if group.memberships.count >= group.max_members %}disabled{% endif %}>그룹 가입</button>
+    </form>
+    <a href="{% url 'group_list' %}">그룹 목록으로 돌아가기</a>
+</body>
+</html>

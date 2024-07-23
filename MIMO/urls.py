@@ -23,4 +23,5 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/accounts/login/', permanent=True)),
     path('accounts/', include('accounts.urls')),
     path('main/', include('main.urls', namespace='main')),
+    # path('groups/', include('groups.urls')),
 ]
